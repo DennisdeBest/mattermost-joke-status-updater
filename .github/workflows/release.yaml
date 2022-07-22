@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: build release
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
+          check-latest: true
+          cache: true
+        run: env GOOS=linux GOARCH=amd64 go build -o mattermost-status-joke-updater-amd64
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -21,3 +28,12 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./mattermost-status-joke-updater-amd64
+          asset_name: mattermost-status-joke-updater-amd64
