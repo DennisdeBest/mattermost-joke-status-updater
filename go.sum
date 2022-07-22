@@ -1,5 +1,5 @@
-github.com/dennisdebest/joke-fetcher v0.0.2 h1:5erPARRYSJRvk0vtgnrSA7UxLxBfIB4YapzMDuCDIqQ=
-github.com/dennisdebest/joke-fetcher v0.0.2/go.mod h1:ww7ATB2y2xLkIqJoZFkabsbURhLUU8fYfFgKqvag594=
+github.com/dennisdebest/joke-fetcher v0.0.3 h1:r9tTmMY3Tn4U+2pwLNZl8QLlCXcFdIq3r6edjD8WnEY=
+github.com/dennisdebest/joke-fetcher v0.0.3/go.mod h1:ww7ATB2y2xLkIqJoZFkabsbURhLUU8fYfFgKqvag594=
 github.com/emvi/null v1.3.1 h1:EQxrthMJnzpozGgKrcCepJmwrzA+UCk7ctBWOZLTW0Y=
 github.com/emvi/null v1.3.1/go.mod h1:tEZhBSLFCucrJdwRentxoOLVRpTCy/3aIfiNKE2uuYU=
 golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75 h1:x03zeu7B2B11ySp+daztnwM5oBJ/8wGUSqrwcw9L0RA=

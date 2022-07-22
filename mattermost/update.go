@@ -28,13 +28,37 @@ type CustomStatus struct {
 	Text  string `json:"text"`
 }
 
+var jokeMaxLength = 100
+var joke string
+
 func Update() {
-	api.FetchJoke()
 	arguments := helper.GetArguments()
-	getStatus(arguments.Url, arguments.Secret)
+	joke = getJoke(arguments.MaxTries)
+	userData := getUserData(arguments.Url, arguments.Secret)
+	setStatus(arguments.Url, arguments.Secret, userData)
 }
 
-func getStatus(url string, secret string) {
+func getJoke(maxTries int) string {
+	var joke *string
+	remainingTries := maxTries
+	for remainingTries > 0 {
+		remainingTries--
+		jokeResponse := api.FetchJoke()
+		jokeLength := len(jokeResponse)
+		if jokeLength <= jokeMaxLength {
+			joke = &jokeResponse
+			break
+		}
+	}
+
+	if joke == nil {
+		log.Fatal(fmt.Sprintf("No joke found in %d tries for max length %d", maxTries, jokeMaxLength))
+	}
+
+	return *joke
+}
+
+func getUserData(url string, secret string) UserResponse {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/users/me", url), nil)
 	req.Header.Add("Authorization", fmt.Sprintf("BEARER %s", secret))
@@ -52,17 +76,22 @@ func getStatus(url string, secret string) {
 		log.Fatal(err)
 	}
 
+	return response
+}
+
+func setStatus(url string, secret string, userData UserResponse) {
+	client := &http.Client{}
 	payload := CustomStatus{
 		Emoji: emojis.GetEmoji(),
-		Text:  api.Joke,
+		Text:  joke,
 	}
 
 	postBody, err := json.Marshal(payload)
 
-	post, err := http.NewRequest("PUT", fmt.Sprintf("%s/users/%s/status/custom", url, response.Id), bytes.NewBuffer(postBody))
+	post, err := http.NewRequest("PUT", fmt.Sprintf("%s/users/%s/status/custom", url, userData.Id), bytes.NewBuffer(postBody))
 	post.Header.Add("Authorization", fmt.Sprintf("BEARER %s", secret))
 	post.Header.Add("Accept", "application/json")
-	resp, _ = client.Do(post)
+	_, err = client.Do(post)
 	if err != nil {
 		log.Fatal(err)
 	}
