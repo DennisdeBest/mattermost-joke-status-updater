@@ -22,7 +22,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: .dist/mattermost-status-joke-updater-amd64
+          file: mattermost-status-joke-updater-amd64
           asset_name: mattermost-status-joke-updater-amd64
           tag: ${{ github.ref }}
           overwrite: true
