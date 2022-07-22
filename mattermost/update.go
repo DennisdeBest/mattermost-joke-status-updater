@@ -33,7 +33,19 @@ var joke string
 
 func Update() {
 	arguments := helper.GetArguments()
+
+	url := arguments.Url
+	secret := arguments.Secret
+
+	if url == "" {
+		log.Fatal("No Mattermost API url has been set")
+	}
+	if secret == "" {
+		log.Fatal("No Mattermost secret has been set")
+	}
+
 	joke = getJoke(arguments.MaxTries)
+
 	userData := getUserData(arguments.Url, arguments.Secret)
 	setStatus(arguments.Url, arguments.Secret, userData)
 }
