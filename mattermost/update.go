@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 type UserResponse struct {
@@ -38,16 +39,25 @@ func Update() {
 	secret := arguments.Secret
 
 	if url == "" {
-		log.Fatal("No Mattermost API url has been set")
+		checkAndAssignEnvVar(&url, "MATTERMOST_URL")
 	}
 	if secret == "" {
-		log.Fatal("No Mattermost secret has been set")
+		checkAndAssignEnvVar(&secret, "MATTERMOST_SECRET")
 	}
 
 	joke = getJoke(arguments.MaxTries)
 
-	userData := getUserData(arguments.Url, arguments.Secret)
-	setStatus(arguments.Url, arguments.Secret, userData)
+	userData := getUserData(url, secret)
+	setStatus(url, secret, userData)
+}
+
+func checkAndAssignEnvVar(value *string, variable string) string {
+	var envVarExists bool
+	*value, envVarExists = os.LookupEnv(variable)
+	if !envVarExists {
+		log.Fatal(fmt.Sprintf("No %s variable has been set", variable))
+	}
+	return *value
 }
 
 func getJoke(maxTries int) string {
