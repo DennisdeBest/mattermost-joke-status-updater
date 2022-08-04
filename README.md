@@ -8,9 +8,13 @@ curl https://raw.githubusercontent.com/dennisdebest/mattermost-joke-status-updat
 
 ## Trigger status update 
 
+The Mattermost API Url and secret are needed, you can pass these as parameters :
+
 ```shell
 mattermost-joke-status-updater --secret=[MatterMost Secret] --url=["MatterMost Url"]
 ```
+
+Or set the `MATTERMOST_URL` and `MATTERMOST_SECRET` env variables.
 
 ### Parameters
 

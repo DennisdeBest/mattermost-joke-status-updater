@@ -17,7 +17,13 @@ jobs:
           go-version: '1.18'
           check-latest: true
           cache: true
-      - run: env GOOS=linux GOARCH=amd64 go build -o mattermost-joke-status-updater-amd64
+      - run: env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o mattermost-joke-status-updater-amd64
+      - name: Compress binaries
+        uses: svenstaro/upx-action@v2
+        with:
+          file: mattermost-joke-status-updater-amd64
+          args: --best --lzma
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -27,3 +33,4 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           body: Release ${{ github.ref }}
+
