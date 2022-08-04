@@ -29,10 +29,17 @@ type CustomStatus struct {
 	Text  string `json:"text"`
 }
 
+type CallLog struct {
+	Url  string `json:"url"`
+	Joke string `json:"joke"`
+}
+
+var CallLogs []CallLog
 var jokeMaxLength = 100
 var joke string
+var apiUrl string
 
-func Update() {
+func Update() []CallLog {
 	arguments := helper.GetArguments()
 
 	url := arguments.Url
@@ -45,10 +52,15 @@ func Update() {
 		checkAndAssignEnvVar(&secret, "MATTERMOST_SECRET")
 	}
 
-	joke = getJoke(arguments.MaxTries)
+	jokeResponse := getJoke(arguments.MaxTries)
 
-	userData := getUserData(url, secret)
-	setStatus(url, secret, userData)
+	if jokeResponse != nil {
+		joke = *jokeResponse
+		userData := getUserData(url, secret)
+		setStatus(url, secret, userData)
+	}
+
+	return CallLogs
 }
 
 func checkAndAssignEnvVar(value *string, variable string) string {
@@ -60,12 +72,17 @@ func checkAndAssignEnvVar(value *string, variable string) string {
 	return *value
 }
 
-func getJoke(maxTries int) string {
+func getJoke(maxTries int) *string {
 	var joke *string
 	remainingTries := maxTries
 	for remainingTries > 0 {
 		remainingTries--
 		jokeResponse := api.FetchJoke()
+		apiUrl = api.LatestApiUrl
+		CallLogs = append(CallLogs, CallLog{
+			Url:  apiUrl,
+			Joke: jokeResponse,
+		})
 		jokeLength := len(jokeResponse)
 		if jokeLength <= jokeMaxLength {
 			joke = &jokeResponse
@@ -74,10 +91,10 @@ func getJoke(maxTries int) string {
 	}
 
 	if joke == nil {
-		log.Fatal(fmt.Sprintf("No joke found in %d tries for max length %d", maxTries, jokeMaxLength))
+		log.Print(fmt.Sprintf("No joke found in %d tries for max length %d", maxTries, jokeMaxLength))
 	}
 
-	return *joke
+	return joke
 }
 
 func getUserData(url string, secret string) UserResponse {
